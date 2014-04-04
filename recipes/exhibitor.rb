@@ -26,6 +26,7 @@ include_recipe "zookeeper::zookeeper"
 ].uniq.each do |dir|
   directory dir do
     owner node[:zookeeper][:user]
+    recursive true
     mode "0755"
   end
 end
