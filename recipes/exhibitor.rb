@@ -111,6 +111,12 @@ template node[:exhibitor][:opts][:defaultconfig] do
     :snapshot_dir => node[:exhibitor][:snapshot_dir],
     :transaction_dir => node[:exhibitor][:transaction_dir],
     :log_index_dir => node[:exhibitor][:log_index_dir])
+  notifies :run, "execute[update_and_notify_exhibitor]"
+end
+
+execute "update_and_notify_exhibitor" do
+  command "rm /tmp/exhibitor.properties"
+  action :nothing
   notifies :restart, "service[exhibitor]", :delayed
 end
 
