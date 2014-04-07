@@ -115,7 +115,7 @@ template node[:exhibitor][:opts][:defaultconfig] do
 end
 
 execute "update_and_notify_exhibitor" do
-  command "rm /tmp/exhibitor.properties"
+  command "rm -f /tmp/exhibitor.properties"
   action :nothing
   notifies :restart, "service[exhibitor]", :delayed
 end
