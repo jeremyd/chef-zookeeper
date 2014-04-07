@@ -111,6 +111,7 @@ template node[:exhibitor][:opts][:defaultconfig] do
     :snapshot_dir => node[:exhibitor][:snapshot_dir],
     :transaction_dir => node[:exhibitor][:transaction_dir],
     :log_index_dir => node[:exhibitor][:log_index_dir])
+  notifies :restart, "service[exhibitor]", :delayed
 end
 
 service "exhibitor" do
