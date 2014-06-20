@@ -86,13 +86,17 @@ template log4j_props do
   )
 end
 
+execute "reload upstart configuration" do
+  command "initctl reload-configuration"
+  action :nothing
+end
+
 template "/etc/init/exhibitor.conf" do
   source "exhibitor.upstart.conf.erb"
   owner "root"
   group "root"
   mode "0644"
-#  notifies :stop, "service[exhibitor]" # :restart doesn't reload upstart conf
-#  notifies :start, "service[exhibitor]"
+  notifies :run, "execute[reload upstart configuration]", :immediately
   variables(
     :user => node[:zookeeper][:user],
     :jar => exhibitor_jar,
@@ -111,18 +115,17 @@ template node[:exhibitor][:opts][:defaultconfig] do
     :snapshot_dir => node[:exhibitor][:snapshot_dir],
     :transaction_dir => node[:exhibitor][:transaction_dir],
     :log_index_dir => node[:exhibitor][:log_index_dir])
-#  notifies :run, "execute[update_and_notify_exhibitor]"
+  notifies :run, "execute[update_and_notify_exhibitor]"
 end
 
 execute "update_and_notify_exhibitor" do
   command "rm -f /tmp/exhibitor.properties"
   action :nothing
-#  notifies :restart, "service[exhibitor]", :delayed
+  notifies :restart, "service[exhibitor]", :delayed
 end
 
 service "exhibitor" do
   provider Chef::Provider::Service::Upstart
   supports :start => true, :status => true, :restart => true
-  #action :start
-  action :nothing
+  action :start
 end
